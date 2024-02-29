@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+
 async function getProducts() {
   const res = await fetch("http://127.0.0.1:8000/api/", {
     next: {
@@ -22,7 +23,9 @@ export default async function Home() {
           <div key={el.id} className="rounded-lg bg-white shadow-md p-4 mb-4">
             <div className="relative h-30">
               <div className="image-container">
+                <Link href={`/products/${el.slug}`}>
                 <Image
+                  className="rounded-lg"
                   src={el.product_image[0].image}
                   alt={el.title}
                   layout="responsive"
@@ -30,6 +33,7 @@ export default async function Home() {
                   width={30} // Set your preferred width
                   height={20} // Set your preferred height
                 />
+                </Link>
               </div>
             </div>
             <p className="text-lg font-semibold">{el.title}</p>
