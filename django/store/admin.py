@@ -6,10 +6,13 @@ from .models import (
     ProductSpecification,
     Product,
     ProductSpecificationValue,
-    ProductImage
+    ProductImage,
+    Cart
 )
 
 admin.site.register(Category, MPTTModelAdmin)
+admin.site.register(Cart)
+
 
 class ProductSpecificationInLine(admin.TabularInline):
     model = ProductSpecification
@@ -31,3 +34,5 @@ class ProductAdmin(admin.ModelAdmin):
         ProductSpecificationValueInLine,
         ProductImageInLine,
     ]
+    
+    

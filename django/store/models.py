@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey
+from django.contrib.auth.models import User
 
 
 class Category(MPTTModel):
@@ -89,7 +90,7 @@ class Product(models.Model):
         default=True,
     )
     created_at = models.DateTimeField(("Created_at"), auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(("Created_at"), auto_now_add=True)
+    updated_at = models.DateTimeField(("Updated_at"), auto_now_add=True)
     
     class Meta:
         ordering = ['-created_at']
@@ -142,3 +143,7 @@ class ProductImage(models.Model):
     class Meta:
         verbose_name=('Product Image')
         verbose_name_plural=('Product Images')
+        
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    products = models.ManyToManyField('Product', blank=True)

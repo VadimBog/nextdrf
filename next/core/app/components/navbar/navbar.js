@@ -1,3 +1,6 @@
+'use client';
+import { useUser } from '@auth0/nextjs-auth0/client';
+
 import Link from "next/link";
 import Image from "next/image";
 import Category from "./category";
@@ -20,7 +23,7 @@ export default function Navbar() {
                         <Category />
 
                         <div className="flex items-center space-x-8 mt-8 text-gray-800 hover:text-gray-400">
-                            <Link href="/login/">
+                            <Link href="/login">
                                 Login
                             </Link>
                         </div>
