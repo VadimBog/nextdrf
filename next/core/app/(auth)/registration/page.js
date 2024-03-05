@@ -1,9 +1,10 @@
 'use client'
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
-export default function RegistrationPage() {
+export default function RegistrationForm() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -14,10 +15,20 @@ export default function RegistrationPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Password validation
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+}{"|';:<>?,./]).{8,}$/;
+        if (!password.match(passwordRegex)) {
+            setError('Password must contain at least 8 characters, including upper and lower case letters, numbers, and special characters');
+            return;
+        }
+
         if (password !== confirmPassword) {
             setError('Passwords do not match');
             return;
         }
+
+        const formData = { username, email, password };
+        console.log('JSON запрос:', JSON.stringify(formData)); // Выводим JSON запрос в консоль
 
         try {
             const response = await fetch('http://127.0.0.1:8000/api/auth/users/', {
@@ -31,6 +42,27 @@ export default function RegistrationPage() {
             if (!response.ok) {
                 throw new Error('Registration failed');
             }
+            // Регистрация успешна, выполняем аутентификацию для получения токена
+            const loginResponse = await fetch('http://127.0.0.1:8000/api/auth/token/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (!loginResponse.ok) {
+                throw new Error('Login failed');
+            }
+
+            const loginData = await loginResponse.json();
+            const token = loginData.auth_token;
+
+            // Сохраняем токен в куки
+            Cookies.set('token', token);
+
+            // Выводим токен в консоль
+            console.log('Token:', token);
 
             // Перенаправляем пользователя на главную страницу
             router.push('/');
@@ -139,7 +171,7 @@ export default function RegistrationPage() {
                     Welcome to Pumba online store!
                     <br />
                     <Link href="/">
-                        <a className="text-black">Back</a>
+                        <div className="text-black">Back</div>
                     </Link>
                 </p>
             </div>

@@ -1,46 +1,84 @@
-import Image from "next/image";
-import Link from "next/link";
+'use client'
+import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function LoginForm() {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const router = useRouter();
 
 
-export default async function ProductPage({ params: { slug } }) {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const formData = { username, password };
+        console.log('JSON запрос:', JSON.stringify(formData)); // Выводим JSON запрос в консоль
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/auth/token/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Login failed');
+            }
+
+            // Вход успешен, выполните действия по вашему усмотрению (например, перенаправление на другую страницу)
+            console.log('Login successful');
+            router.push('/');
+            
+            // Очищаем форму
+            setUsername('');
+            setPassword('');
+            setError('');
+        } catch (error) {
+            console.error('Login error:', error);
+            setError('Login failed');
+        }
+    };
 
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                    Sign in to your account
+                    Sign in to your account<br />
+                    <span className="text-sm font-medium text-gray-900">- Or -</span><br />
+                    <Link href="/registration">
+                        <span className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Register</span>
+                    </Link>
                 </h2>
             </div>
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                <form className="space-y-6" action="#" method="POST">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                            Email address
+                        <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
+                            Username
                         </label>
                         <div className="mt-2">
                             <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
+                                id="username"
+                                name="username"
+                                type="text"
+                                autoComplete="username"
                                 required
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                                 className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <div className="flex items-center justify-between">
-                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                                Password
-                            </label>
-                            <div className="text-sm">
-                                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                                    Forgot password?
-                                </a>
-                            </div>
-                        </div>
+                        <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                            Password
+                        </label>
                         <div className="mt-2">
                             <input
                                 id="password"
@@ -48,10 +86,16 @@ export default async function ProductPage({ params: { slug } }) {
                                 type="password"
                                 autoComplete="current-password"
                                 required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
+
+                    {error && (
+                        <div className="text-red-500">{error}</div>
+                    )}
 
                     <div>
                         <button
@@ -74,3 +118,5 @@ export default async function ProductPage({ params: { slug } }) {
         </div>
     );
 }
+
+
