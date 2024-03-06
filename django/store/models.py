@@ -144,6 +144,20 @@ class ProductImage(models.Model):
         verbose_name=('Product Image')
         verbose_name_plural=('Product Images')
         
+# ======== Shopping cart models =================
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    products = models.ManyToManyField('Product', blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
+
+    def __str__(self):
+        return f'Cart for {self.user.username}'
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f'{self.quantity} x {self.product.title}'
+
+    def total_price(self):
+        return self.quantity * self.product.regular_price

@@ -18,7 +18,6 @@ export default function Navbar() {
             setIsLoggedIn(true);
             setToken(authToken);
             // Fetch user details or username from backend using the token
-            // You need to implement this part
             fetchUserDetails(authToken);
         }
     }, []);

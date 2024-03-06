@@ -7,11 +7,12 @@ from .models import (
     Product,
     ProductSpecificationValue,
     ProductImage,
-    Cart
+    Cart,
+    CartItem,
 )
 
 admin.site.register(Category, MPTTModelAdmin)
-admin.site.register(Cart)
+
 
 
 class ProductSpecificationInLine(admin.TabularInline):
@@ -34,5 +35,12 @@ class ProductAdmin(admin.ModelAdmin):
         ProductSpecificationValueInLine,
         ProductImageInLine,
     ]
-    
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    extra = 0
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    inlines = [CartItemInline]
     

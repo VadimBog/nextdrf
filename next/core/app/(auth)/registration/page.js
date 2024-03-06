@@ -27,9 +27,11 @@ export default function RegistrationForm() {
             return;
         }
 
+        // debugging (username, email, password)
         const formData = { username, email, password };
-        console.log('JSON запрос:', JSON.stringify(formData)); // Выводим JSON запрос в консоль
+        console.log('JSON запрос:', JSON.stringify(formData));
 
+        // 
         try {
             const response = await fetch('http://127.0.0.1:8000/api/auth/users/', {
                 method: 'POST',
@@ -42,7 +44,7 @@ export default function RegistrationForm() {
             if (!response.ok) {
                 throw new Error('Registration failed');
             }
-            // Регистрация успешна, выполняем аутентификацию для получения токена
+            // after success registration -> login to get token -> save token in js-cookie
             const loginResponse = await fetch('http://127.0.0.1:8000/api/auth/token/login/', {
                 method: 'POST',
                 headers: {
@@ -58,13 +60,13 @@ export default function RegistrationForm() {
             const loginData = await loginResponse.json();
             const token = loginData.auth_token;
 
-            // Сохраняем токен в куки
+            // save token -> cookies
             Cookies.set('token', token);
 
-            // Выводим токен в консоль
+            // debugging (token)
             console.log('Token:', token);
 
-            // Перенаправляем пользователя на главную страницу
+            // user pushing to main 
             router.push('/');
         } catch (error) {
             console.error('Registration error:', error);
