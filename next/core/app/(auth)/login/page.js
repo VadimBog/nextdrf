@@ -2,13 +2,13 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie'; // Import js-cookie
 
 export default function LoginForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const router = useRouter();
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,14 +29,17 @@ export default function LoginForm() {
                 throw new Error('Login failed');
             }
 
-            // Вход успешен, выполните действия по вашему усмотрению (например, перенаправление на другую страницу)
-            console.log('Login successful');
-            router.push('/');
-            
-            // Очищаем форму
+            // Вход успешен, сохраняем токен в cookies
+            const data = await response.json();
+            Cookies.set('authToken', data.auth_token); // Save token in cookies
+
+            // Очищаем форму и сбрасываем ошибки
             setUsername('');
             setPassword('');
             setError('');
+
+            // Redirect to main page
+            router.push('/');
         } catch (error) {
             console.error('Login error:', error);
             setError('Login failed');
