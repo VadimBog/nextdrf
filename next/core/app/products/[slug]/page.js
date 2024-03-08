@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 import Link from "next/link";
 
@@ -17,7 +16,7 @@ export default async function ProductPage({ params: { slug } }) {
 
     return (
         <div className="container mx-auto p-6">
-            <div className="bg-white rounded-lg shadow-xl overflow-hidden flex">
+            <div className="bg-white rounded-lg shadow-xl overflow-hidden flex p-6">
                 <div className="w-1/2 flex justify-center items-center">
                     <div className="relative w-full h-full">
                         <Image
@@ -30,15 +29,18 @@ export default async function ProductPage({ params: { slug } }) {
                         />
                     </div>
                 </div>
-                <div className="w-1/2 p-6">
-                    <h1 className="text-3xl font-semibold mb-4">{product.title}</h1>
-                    <p className="text-gray-600 mb-2">${product.regular_price}</p>
-                    <p className="text-lg mb-4">{product.description}</p>
-                    <Link href="/">
-                        <p className="text-blue-500">Back to products</p>
-                    </Link>
+                <div className="w-1/2">
+                    <div className="p-4">
+                        <h1 className="text-3xl font-semibold mb-4">{product.title}</h1>
+                        <p className="text-gray-600 mb-2">${product.regular_price}</p>
+                        <p className="text-lg mb-4">{product.description}</p>
+                        <Link href="/">
+                            <p className="text-blue-500">Back to products</p>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
+

@@ -29,11 +29,11 @@ export default function LoginForm() {
                 throw new Error('Login failed');
             }
 
-            // Вход успешен, сохраняем токен в cookies
+            // Entra
             const data = await response.json();
             Cookies.set('authToken', data.auth_token); // Save token in cookies
 
-            // Очищаем форму и сбрасываем ошибки
+            // Clean form and error
             setUsername('');
             setPassword('');
             setError('');
