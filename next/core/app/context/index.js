@@ -47,7 +47,7 @@ export function UserProvider({ children }) {
     };
 
     return (
-        <UserContext.Provider value={{ isLoggedIn, username, handleLogout }}>
+        <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn, username, setUsername, handleLogout }}>
             {children}
         </UserContext.Provider>
     );

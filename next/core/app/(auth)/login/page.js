@@ -1,11 +1,14 @@
 'use client'
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Import the useRouter hook from 'next/router'
 import Cookies from 'js-cookie'; // Import js-cookie
+import { useUser } from '../../context'; // Import useUser from userContext
+
+
 
 export default function LoginForm() {
-    const [username, setUsername] = useState('');
+    const { setIsLoggedIn, setUsername, username } = useUser();
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const router = useRouter();
@@ -14,7 +17,7 @@ export default function LoginForm() {
         e.preventDefault();
 
         const formData = { username, password };
-        console.log('JSON запрос:', JSON.stringify(formData)); // Выводим JSON запрос в консоль
+        console.log('JSON request:', JSON.stringify(formData)); // Output JSON request to console
 
         try {
             const response = await fetch('http://127.0.0.1:8000/api/auth/token/login/', {
@@ -29,14 +32,13 @@ export default function LoginForm() {
                 throw new Error('Login failed');
             }
 
-            // Entra
+            // Successfully logged in
             const data = await response.json();
             Cookies.set('authToken', data.auth_token); // Save token in cookies
 
-            // Clean form and error
-            setUsername('');
-            setPassword('');
-            setError('');
+            console.log('Token:', data.auth_token); // Log token to console for debugging
+
+            setIsLoggedIn(true); // Set IsLogin to true in context
 
             // Redirect to main page
             router.push('/');
@@ -72,7 +74,7 @@ export default function LoginForm() {
                                 autoComplete="username"
                                 required
                                 value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                onChange={(e) => setUsername(e.target.value)} // Update the username state
                                 className="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
@@ -121,5 +123,3 @@ export default function LoginForm() {
         </div>
     );
 }
-
-
