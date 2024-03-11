@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, ProductImage, Cart
+from .models import Product, ProductImage, CartItem, Cart
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
@@ -17,8 +17,13 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "description", "slug", "regular_price", "discount_price", "created_at", "product_image"]
 
 
-class CartSerializer(serializers.ModelSerializer):
+class CartItemSerializer(serializers.ModelSerializer):
+    product_image = serializers.SerializerMethodField()
+
     class Meta:
-        model = Cart
-        fields = ('id', 'user', 'products')
-        read_only_fields = ('user',)
+        model = CartItem
+        fields = ['id', 'cart', 'product', 'quantity', 'product_image']
+
+    def get_product_image(self, obj):
+        images = ProductImage.objects.filter(product=obj.product)
+        return ImageSerializer(images, many=True).data
