@@ -8,6 +8,7 @@ export function UserProvider({ children }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState("");
     const [token, setToken] = useState(Cookies.get("authToken"));
+    console.log("Token from UserProvider:", token);
 
     useEffect(() => {
         if (token) {
@@ -47,7 +48,7 @@ export function UserProvider({ children }) {
     };
 
     return (
-        <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn, username, setUsername, handleLogout }}>
+        <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn, username, setUsername, handleLogout, token }}>
             {children}
         </UserContext.Provider>
     );

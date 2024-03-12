@@ -14,6 +14,4 @@ urlpatterns = [
     path('api/auth/', include('djoser.urls')),
     re_path('api/auth/', include('djoser.urls.authtoken')),
     path('api/<slug:slug>/', views.ProductView.as_view(), name="product"),
-
-    
 ]

@@ -1,33 +1,46 @@
 'use client'
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useUser } from '../context';
 
-// Sample product data (replace with actual product data)
-const products = [
-    {
-        id: 1,
-        title: "Product 1",
-        regular_price: 10,
-        product_image: [{ image: "/product1.jpg" }],
-        description: "Description of Product 1",
-    },
-    {
-        id: 2,
-        title: "Product 2",
-        regular_price: 20,
-        product_image: [{ image: "/product2.jpg" }],
-        description: "Description of Product 2",
-    },
-];
+export default function CartPage() {
+    const [products, setProducts] = useState([]);
+    const { token } = useUser();
+    console.log("ToKeN from SC page:", token);
 
-export default function ProductPage() {
-    // Define a state to store selected products in the cart
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                if (!token) {
+                    console.error("Authentication token not found.");
+                    return;
+                }
+                console.log("current token:", token);
+                const response = await fetch("http://127.0.0.1:8000/api/cart/items/", {
+                    headers: {
+                        Authorization: `Token ${token}`,
+                    },
+                });
+                const data = await response.json();
+                setProducts(data);
+                console.log("JSON response:", data);
+
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
     const [cart, setCart] = useState([]);
 
-    // Function to add product to the cart
     const addToCart = (product) => {
         setCart([...cart, product]);
     };
+
+    // Calculate total price of items in the cart
+    const total = cart.reduce((acc, curr) => acc + parseFloat(curr.regular_price), 0);
 
     return (
         <div className="container mx-auto p-6">
@@ -38,23 +51,24 @@ export default function ProductPage() {
                         {products.map((product) => (
                             <div key={product.id} className="mb-4 shadow-md rounded-lg overflow-hidden p-4">
                                 <div className="relative w-full h-full">
-                                    <Image
-                                        src={product.product_image[0].image}
-                                        alt={product.title}
-                                        width={400} // Set your preferred width
-                                        height={400} // Set your preferred height
-                                        objectFit="contain"
-                                        className="rounded-lg"
-                                    />
+                                    <div className="image-container-shoppingcart">
+                                        <Image
+                                            src={product.product_image[0].image}
+                                            alt={product.title}
+                                            width={200}
+                                            height={200}
+                                            className="rounded-lg"
+                                        />
+                                    </div>
                                 </div>
                                 <div>
                                     <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
                                     <p className="text-gray-600 mb-2">${product.regular_price}</p>
                                     <button
                                         onClick={() => addToCart(product)}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                                        className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
                                     >
-                                        Add to Cart
+                                        Remove
                                     </button>
                                 </div>
                             </div>
@@ -75,10 +89,10 @@ export default function ProductPage() {
                         <div className="mt-4">
                             <p className="text-xl font-semibold">Total:</p>
                             <p className="text-gray-600">
-                                ${cart.reduce((acc, curr) => acc + curr.regular_price, 0)}
+                                ${total.toFixed(2)}
                             </p>
-                            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4">
-                                Proceed to Checkout
+                            <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+                                Checkout
                             </button>
                         </div>
                     </div>

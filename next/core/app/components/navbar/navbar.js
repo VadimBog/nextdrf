@@ -2,14 +2,21 @@
 import React, { useEffect } from 'react';
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from 'next/navigation'; 
 import { useUser } from '../../context';
 
 export default function Navbar() {
     const { isLoggedIn, username, handleLogout } = useUser();
+    const router = useRouter(); 
 
     useEffect(() => {
         console.log('isLoggedIn state changed:', isLoggedIn);
     }, [isLoggedIn]);
+
+    const handleLogoutClick = () => {
+        handleLogout(); 
+        router.push('/'); 
+    };
 
     return (
         <main>
@@ -28,10 +35,13 @@ export default function Navbar() {
                         <div className="flex items-center space-x-8 mt-8 text-gray-800">
                             {isLoggedIn ? (
                                 <>
-                                    <button onClick={handleLogout} className="hover:text-blue-500">
+                                    <span>{username}</span>
+                                    <Link href="/shoppingcart" className="hover:text-blue-500">
+                                        Cart
+                                    </Link>
+                                    <button onClick={handleLogoutClick} className="hover:text-blue-500">
                                         Logout
                                     </button>
-                                    <span>{username}</span>
                                 </>
                             ) : (
                                 <Link href="/login" className="hover:text-blue-500">
@@ -45,5 +55,4 @@ export default function Navbar() {
         </main>
     );
 }
-
 

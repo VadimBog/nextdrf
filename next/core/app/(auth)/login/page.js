@@ -17,7 +17,7 @@ export default function LoginForm() {
         e.preventDefault();
 
         const formData = { username, password };
-        console.log('JSON request:', JSON.stringify(formData)); // Output JSON request to console
+        console.log('JSON request from login page:', JSON.stringify(formData)); // Output JSON request to console
 
         try {
             const response = await fetch('http://127.0.0.1:8000/api/auth/token/login/', {
@@ -36,7 +36,7 @@ export default function LoginForm() {
             const data = await response.json();
             Cookies.set('authToken', data.auth_token); // Save token in cookies
 
-            console.log('Token:', data.auth_token); // Log token to console for debugging
+            console.log('Token from login page:', data.auth_token); // Log token to console for debugging
 
             setIsLoggedIn(true); // Set IsLogin to true in context
 
