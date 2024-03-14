@@ -2,11 +2,17 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useUser } from '../context';
+import useCheckOutModal from "../hooks/ckeckOutModal";
 
 export default function CartPage() {
+    const CheckOutModal = useCheckOutModal();
     const [products, setProducts] = useState([]);
     const { token } = useUser();
     console.log("ToKeN from SC page:", token);
+
+    const [promoCode, setPromoCode] = useState("");
+    const [invalidPromoCode, setInvalidPromoCode] = useState("");
+    const [promoCodeEntered, setPromoCodeEntered] = useState(false);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -35,12 +41,36 @@ export default function CartPage() {
 
     // Calculate total price of items in the cart
     const total = products.reduce((acc, curr) => acc + curr.total_price, 0);
+    // Calculate tax (9% of total price)
+    const tax = total * 0.09;
+    // Calculate estimated total (total price + tax)
+    const estimatedTotal = total + tax;
+
+    const handlePromoCodeSubmit = () => {
+        // Check if the promo code is entered
+        if (!promoCode.trim()) {
+            // If promo code is not entered, set the status for the popup message
+            setInvalidPromoCode("Please enter your promo code");
+            return;
+        }
+
+        // Check the validity of the promo code
+        if (promoCode === "VALID_CODE") {
+            // If the promo code is valid, reset the status for invalid promo code and set the status for entered promo code
+            setInvalidPromoCode("");
+            setPromoCodeEntered(true);
+        } else {
+            // If the promo code is invalid, set the status for invalid promo code and reset the status for entered promo code
+            setInvalidPromoCode("The code you entered is invalid");
+            setPromoCodeEntered(false);
+        }
+    };
 
     return (
         <div className="container mx-auto p-6">
             <div className="grid grid-cols-3 gap-6">
                 <div className="bg-white rounded-lg shadow-xl overflow-hidden col-span-2">
-                    <div className="p-6">
+                    <div className="p-6 space-y-4">
                         <h1 className="text-3xl font-semibold mb-4">Products in your cart</h1>
                         {products.map((product) => (
                             <div key={product.id} className="mb-4 shadow-md rounded-lg overflow-hidden p-4">
@@ -65,16 +95,46 @@ export default function CartPage() {
                 </div>
                 <div className="bg-white rounded-lg shadow-xl overflow-hidden">
                     <div className="p-6">
-                        <h1 className="text-3xl font-semibold mb-4">Shopping Cart</h1>
-                        <div className="mt-4">
-                            <p className="text-xl font-semibold">Total:</p>
-                            <p className="text-gray-600">
-                                ${total.toFixed(2)}
-                            </p>
-                            <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-                                Checkout
+                        <div className="mb-6 text-3xl font-semibold text-center">Shopping Cart</div>
+                        <div className="border-b mb-6"></div>
+                        <div className="flex flex-col md:flex-row mb-6 md:items-center space-y-2 md:space-y-0 md:space-x-2">
+                            <input
+                                type="text"
+                                placeholder="Enter promo code"
+                                className="border border-gray-300 px-4 py-2 md:w-72"
+                                value={promoCode}
+                                onChange={(e) => setPromoCode(e.target.value)}
+                            />
+                            <button
+                                className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-2 border border-gray-300 rounded shadow"
+                                onClick={handlePromoCodeSubmit}
+                            >
+                                Submit
                             </button>
                         </div>
+                        {invalidPromoCode && <p className="text-red-500 mb-2">{invalidPromoCode}</p>}
+                        <div className="flex justify-between mb-4">
+                            <div>Shopping cost:</div>
+                            <div>${total.toFixed(2)}</div>
+                        </div>
+                        <div className="flex justify-between mb-4">
+                            <div>Discount:</div>
+                            <div>-$0</div>
+                        </div>
+                        <div className="flex justify-between mb-4">
+                            <div>Tax:</div>
+                            <div>${tax.toFixed(2)}</div>
+                        </div>
+                        <div className="flex justify-between mb-4">
+                            <div className="text-xl font-semibold">Estimated Total:</div>
+                            <div className="text-xl font-semibold">${estimatedTotal.toFixed(2)}</div>
+                        </div>
+                        <button
+                            className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded shadow w-full"
+                            onClick={CheckOutModal.open}
+                        >
+                            Checkout
+                        </button>
                     </div>
                 </div>
             </div>
