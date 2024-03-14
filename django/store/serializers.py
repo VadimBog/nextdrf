@@ -23,10 +23,11 @@ class CartItemSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source='product.title')
     description = serializers.CharField(source='product.description')
     regular_price = serializers.DecimalField(source='product.regular_price', max_digits=5, decimal_places=2)
+    total_price = serializers.SerializerMethodField()
 
     class Meta:
         model = CartItem
-        fields = ['id', 'cart', 'product', 'quantity', 'product_image', 'title', 'description', 'regular_price']
+        fields = ['id', 'cart', 'product', 'quantity', 'product_image', 'title', 'description', 'regular_price', 'total_price']
 
     def get_product_image(self, obj):
         images = ProductImage.objects.filter(product=obj.product)
@@ -35,3 +36,6 @@ class CartItemSerializer(serializers.ModelSerializer):
             return [{'image': request.build_absolute_uri(image.image.url), 'alt_text': image.alt_text} for image in images]
         else:
             return [{'image': reverse('placeholder-image'), 'alt_text': image.alt_text} for image in images]
+    
+    def get_total_price(self, obj):
+        return obj.total_price()

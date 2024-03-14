@@ -33,14 +33,8 @@ export default function CartPage() {
         fetchProducts();
     }, []);
 
-    const [cart, setCart] = useState([]);
-
-    const addToCart = (product) => {
-        setCart([...cart, product]);
-    };
-
     // Calculate total price of items in the cart
-    const total = cart.reduce((acc, curr) => acc + parseFloat(curr.regular_price), 0);
+    const total = products.reduce((acc, curr) => acc + curr.total_price, 0);
 
     return (
         <div className="container mx-auto p-6">
@@ -64,12 +58,6 @@ export default function CartPage() {
                                 <div>
                                     <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
                                     <p className="text-gray-600 mb-2">${product.regular_price}</p>
-                                    <button
-                                        onClick={() => addToCart(product)}
-                                        className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-                                    >
-                                        Remove
-                                    </button>
                                 </div>
                             </div>
                         ))}
@@ -78,14 +66,6 @@ export default function CartPage() {
                 <div className="bg-white rounded-lg shadow-xl overflow-hidden">
                     <div className="p-6">
                         <h1 className="text-3xl font-semibold mb-4">Shopping Cart</h1>
-                        {cart.map((item) => (
-                            <div key={item.id} className="mb-4">
-                                <div>
-                                    <h2 className="text-xl font-semibold">{item.title}</h2>
-                                    <p className="text-gray-600">Price: ${item.regular_price}</p>
-                                </div>
-                            </div>
-                        ))}
                         <div className="mt-4">
                             <p className="text-xl font-semibold">Total:</p>
                             <p className="text-gray-600">
