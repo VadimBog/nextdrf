@@ -14,11 +14,10 @@ const Modal = ({
     }, [isOpen])
 
     const handleClose = useCallback(() => {
+        
         setShowModal(false);
+        close();
 
-        setTimeout(() => {
-            close();
-        }, 300)
     }, [close])
 
     if (!isOpen) {
@@ -41,7 +40,7 @@ const Modal = ({
                                 </svg>
                             </div>
 
-                            <h2 className="text-lg font-bold">{label}</h2>
+                            <h2 className="text-lg block text-gray-700 font-bold">{label}</h2>
                         </header>
 
                         <section className="p-6">
