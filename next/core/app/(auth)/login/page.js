@@ -8,7 +8,7 @@ import { useUser } from '../../context'; // Import useUser from userContext
 
 
 export default function LoginForm() {
-    const { setIsLoggedIn, setUsername, username } = useUser();
+    const { setIsLoggedIn, setUsername, username, setToken } = useUser();
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const router = useRouter();
@@ -35,9 +35,7 @@ export default function LoginForm() {
             // Successfully logged in
             const data = await response.json();
             Cookies.set('authToken', data.auth_token); // Save token in cookies
-
-            console.log('Token from login page:', data.auth_token); // Log token to console for debugging
-
+            setToken(data.auth_token); // Set token in context
             setIsLoggedIn(true); // Set IsLogin to true in context
 
             // Redirect to main page

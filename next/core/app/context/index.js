@@ -7,8 +7,7 @@ const UserContext = createContext();
 export function UserProvider({ children }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState("");
-    const [token, setToken] = useState(Cookies.get("authToken"));
-    console.log("Token from UserProvider:", token);
+    const [token, setToken] = useState("");
 
     useEffect(() => {
         if (token) {
@@ -16,7 +15,7 @@ export function UserProvider({ children }) {
             fetchUserDetails(token);
         } else {
             setIsLoggedIn(false);
-            setUsername("");
+            setUsername(""); 
         }
     }, [token]);
 
@@ -48,7 +47,7 @@ export function UserProvider({ children }) {
     };
 
     return (
-        <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn, username, setUsername, handleLogout, token }}>
+        <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn, username, setUsername, handleLogout, token, setToken }}>
             {children}
         </UserContext.Provider>
     );
