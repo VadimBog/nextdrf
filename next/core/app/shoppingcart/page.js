@@ -3,6 +3,9 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useUser } from '../context';
 import useCheckOutModal from "../hooks/ckeckOutModal";
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 export default function CartPage() {
     const CheckOutModal = useCheckOutModal();
@@ -13,6 +16,7 @@ export default function CartPage() {
     const [promoCode, setPromoCode] = useState("");
     const [invalidPromoCode, setInvalidPromoCode] = useState("");
     const [promoCodeEntered, setPromoCodeEntered] = useState(false);
+    const [windowWidth, windowHeight] = useWindowSize();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -66,47 +70,35 @@ export default function CartPage() {
         }
     };
 
+    function useWindowSize() {
+        const [size, setSize] = useState([0, 0]);
+        useEffect(() => {
+            const handleResize = () => setSize([window.innerWidth, window.innerHeight]);
+            window.addEventListener('resize', handleResize);
+            handleResize();
+            return () => window.removeEventListener('resize', handleResize);
+        }, []);
+        return size;
+    }
+
     return (
         <div className="container mx-auto p-6">
-            <div className="grid grid-cols-3 gap-6">
-                <div className="bg-white rounded-lg shadow-xl overflow-hidden col-span-2">
-                    <div className="p-6 space-y-4">
-                        <h1 className="text-3xl font-semibold mb-4">Products in your cart</h1>
-                        {products.map((product) => (
-                            <div key={product.id} className="mb-4 shadow-md rounded-lg overflow-hidden p-4">
-                                <div className="relative w-full h-full">
-                                    <div className="image-container-shoppingcart">
-                                        <Image
-                                            src={product.product_image[0].image}
-                                            alt={product.title}
-                                            width={200}
-                                            height={200}
-                                            className="rounded-lg"
-                                        />
-                                    </div>
-                                </div>
-                                <div>
-                                    <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
-                                    <p className="text-gray-600 mb-2">${product.regular_price}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-                    <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className={`bg-white rounded-lg shadow-xl overflow-hidden md:col-span-2 ${windowWidth < 768 ? '' : 'order-2'}`}>
+                    {/* Shopping Cart */}
+                    <div className={`p-6 ${windowWidth < 768 ? 'md:animate-slide-up' : ''}`}>
                         <div className="mb-6 text-3xl font-semibold text-center">Shopping Cart</div>
                         <div className="border-b mb-6"></div>
                         <div className="flex flex-col md:flex-row mb-6 md:items-center space-y-2 md:space-y-0 md:space-x-2">
                             <input
                                 type="text"
                                 placeholder="Enter promo code"
-                                className="border border-gray-300 px-4 py-2 md:w-72"
+                                className="border border-gray-300 px-4 py-2 md:flex-grow md:flex-shrink"
                                 value={promoCode}
                                 onChange={(e) => setPromoCode(e.target.value)}
                             />
                             <button
-                                className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-2 border border-gray-300 rounded shadow"
+                                className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-2 border border-gray-300 rounded shadow md:inline-block md:ml-2"
                                 onClick={handlePromoCodeSubmit}
                             >
                                 Submit
@@ -137,7 +129,34 @@ export default function CartPage() {
                         </button>
                     </div>
                 </div>
+
+                <div className={`bg-white rounded-lg shadow-xl overflow-hidden ${windowWidth < 768 ? 'md:order-first' : ''}`}>
+                    {/* Products in your cart */}
+                    <div className="p-6 space-y-4">
+                        <h1 className="text-3xl font-semibold mb-4">Products in your cart</h1>
+                        {products.map((product) => (
+                            <div key={product.id} className="mb-4 shadow-md rounded-lg overflow-hidden p-4 flex">
+                                <div className="relative w-1/3 h-full mr-4">
+                                    <div className="image-container-shoppingcart">
+                                        <Image
+                                            src={product.product_image[0].image}
+                                            alt={product.title}
+                                            width={200}
+                                            height={200}
+                                            className="rounded-lg"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="w-2/3">
+                                    <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
+                                    <p className="text-gray-600 mb-2">${product.regular_price}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
-    );
+);
+    
 }
