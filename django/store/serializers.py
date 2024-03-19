@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from .models import Product, ProductImage, CartItem, Cart
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
+from .models import Product, ProductImage, CartItem, ProductSpecification, ProductSpecificationValue
 from django.urls import reverse
 
 
@@ -10,14 +8,25 @@ class ImageSerializer(serializers.ModelSerializer):
         model = ProductImage
         fields = ["image", "alt_text"]
 
+class ProductSpecificationValueSerializer(serializers.ModelSerializer):
+    specification = serializers.CharField(source='specification.name')
+
+    class Meta:
+        model = ProductSpecificationValue
+        fields = ['specification', 'value']
+
 class ProductSerializer(serializers.ModelSerializer):
     product_image = ImageSerializer(many=True, read_only=True)
+    product_specifications = serializers.SerializerMethodField()
     
     class Meta:
         model = Product
-        fields = ["id", "title", "description", "slug", "regular_price", "discount_price", "created_at", "product_image"]
+        fields = ["id", "title", "description", "slug", "regular_price", "discount_price", "created_at", "product_image", "product_specifications"]
 
-
+    def get_product_specifications(self, obj):
+        product_specification_values = ProductSpecificationValue.objects.filter(product=obj)
+        return ProductSpecificationValueSerializer(product_specification_values, many=True).data
+    
 class CartItemSerializer(serializers.ModelSerializer):
     product_image = serializers.SerializerMethodField()
     title = serializers.CharField(source='product.title')

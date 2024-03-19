@@ -110,13 +110,13 @@ export default function LoginForm() {
                     </div>
                 </form>
 
-                <p className="mt-10 text-center text-sm text-gray-500">
+                <div className="mt-10 text-center text-sm text-gray-500">
                     Welcome to Pumba online store!
                     <br />
                     <Link href="/">
                         <div className="text-black">Back</div>
                     </Link>
-                </p>
+                </div>
             </div>
         </div>
     );
