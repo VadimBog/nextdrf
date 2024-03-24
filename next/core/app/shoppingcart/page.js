@@ -3,9 +3,6 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useUser } from '../context';
 import useCheckOutModal from "../hooks/ckeckOutModal";
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
 
 export default function CartPage() {
     const CheckOutModal = useCheckOutModal();
@@ -150,6 +147,7 @@ export default function CartPage() {
                                 <div className="w-2/3">
                                     <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
                                     <p className="text-gray-600 mb-2">${product.regular_price}</p>
+                                    <p className="text-gray-600 mb-2">Quantity: {product.quantity}</p>
                                 </div>
                             </div>
                         ))}

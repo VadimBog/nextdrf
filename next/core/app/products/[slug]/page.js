@@ -14,10 +14,26 @@ async function getProducts(slug) {
     return res.json();
 }
 
+async function addToCart(productId, quantity, token) {
+    const res = await fetch('http://127.0.0.1:8000/api/cart/items/', {
+        method: 'POST',
+        headers: {
+            Authorization: `Token ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            product: productId,
+            quantity: quantity
+        })
+    });
+    if (!res.ok) throw new Error('failed to add item to cart');
+}
+
 export default function ProductPage({ params: { slug } }) {
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const { isLoggedIn } = useUser();
+    const { isLoggedIn, token } = useUser();
+    console.log("ToKeN333:", token);
 
     useEffect(() => {
         getProducts(slug).then(data => setProduct(data));
@@ -31,6 +47,12 @@ export default function ProductPage({ params: { slug } }) {
         if (quantity > 1) {
             setQuantity(prevQuantity => prevQuantity - 1);
         }
+    }
+
+    const handleAddToCart = () => {
+        addToCart(product.id, quantity, token)
+            .then(() => alert('Item added to cart successfully'))
+            .catch(error => console.error('Failed to add item to cart:', error));
     }
 
     if (!product) return 'Loading...';
@@ -89,7 +111,10 @@ export default function ProductPage({ params: { slug } }) {
                                             </button>
                                         </div>
                                     </div>
-                                    <button className="size-10 w-auto py-2 px-3 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-md border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none ml-4">Add to cart</button>
+                                    <button 
+                                            className="size-10 w-auto py-2 px-3 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-md border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none ml-4" onClick={handleAddToCart}>
+                                        Add to cart
+                                    </button>
                                 </div>
                                 )}
                                 <p className="text-lg mb-4">{product.description}</p>
