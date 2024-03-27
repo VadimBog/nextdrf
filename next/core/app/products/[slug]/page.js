@@ -33,7 +33,6 @@ export default function ProductPage({ params: { slug } }) {
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const { isLoggedIn, token } = useUser();
-    console.log("ToKeN333:", token);
 
     useEffect(() => {
         getProducts(slug).then(data => setProduct(data));

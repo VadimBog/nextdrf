@@ -1,5 +1,6 @@
 'use client'
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useUser } from '../context';
 import useCheckOutModal from "../hooks/ckeckOutModal";
@@ -8,7 +9,6 @@ export default function CartPage() {
     const CheckOutModal = useCheckOutModal();
     const [products, setProducts] = useState([]);
     const { token } = useUser();
-    console.log("ToKeN from SC page:", token);
 
     const [promoCode, setPromoCode] = useState("");
     const [invalidPromoCode, setInvalidPromoCode] = useState("");
@@ -39,6 +39,25 @@ export default function CartPage() {
 
         fetchProducts();
     }, []);
+
+    const handleDeleteProduct = async (productId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/cart/items/${productId}/`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Token ${token}`,
+                },
+            });
+            if (response.ok) {
+                setProducts(products.filter(product => product.id !== productId));
+                console.log(`Product with ID ${productId} deleted successfully.`);
+            } else {
+                console.error(`Failed to delete product with ID ${productId}.`);
+            }
+        } catch (error) {
+            console.error("Error deleting product:", error);
+        }
+    };
 
     // Calculate total price of items in the cart
     const total = products.reduce((acc, curr) => acc + curr.total_price, 0);
@@ -76,6 +95,23 @@ export default function CartPage() {
             return () => window.removeEventListener('resize', handleResize);
         }, []);
         return size;
+    }
+
+    if (products.length === 0) {
+        return (
+            <div className="flex justify-center items-center h-screen flex-col">
+                <Image
+                    src="/empty_cart.png"
+                    alt="Empty cart"
+                    width={200}
+                    height={200}
+                />
+                <p className="mt-4">Your cart is empty. Please add any product.</p>
+                <Link href="/">
+                    <p className="text-blue-500">Back to products</p>
+                </Link>
+            </div>
+        );
     }
 
     return (
@@ -130,7 +166,7 @@ export default function CartPage() {
                 <div className={`bg-white rounded-lg shadow-xl overflow-hidden ${windowWidth < 768 ? 'md:order-first' : ''}`}>
                     {/* Products in your cart */}
                     <div className="p-6 space-y-4">
-                        <h1 className="text-3xl font-semibold mb-4">Products in your cart</h1>
+                        <h1 className="text-3xl font-semibold mb-4">Products in cart</h1>
                         {products.map((product) => (
                             <div key={product.id} className="mb-4 shadow-md rounded-lg overflow-hidden p-4 flex">
                                 <div className="relative w-1/3 h-full mr-4">
@@ -144,10 +180,18 @@ export default function CartPage() {
                                         />
                                     </div>
                                 </div>
-                                <div className="w-2/3">
-                                    <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
-                                    <p className="text-gray-600 mb-2">${product.regular_price}</p>
-                                    <p className="text-gray-600 mb-2">Quantity: {product.quantity}</p>
+                                <div className="w-2/3 flex justify-between items-center">
+                                    <div>
+                                        <h2 className="text-xl font-semibold mb-2">{product.title}</h2>
+                                        <p className="text-gray-600 mb-2">${product.regular_price}</p>
+                                        <p className="text-gray-600 mb-2">Quantity: {product.quantity}</p>
+                                    </div>
+                                    <button
+                                        className="text-red-500"
+                                        onClick={() => handleDeleteProduct(product.id)}
+                                    >
+                                        &#10005;
+                                    </button>
                                 </div>
                             </div>
                         ))}
@@ -155,6 +199,6 @@ export default function CartPage() {
                 </div>
             </div>
         </div>
-);
-    
-}
+    );
+
+    }
